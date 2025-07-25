@@ -1,6 +1,6 @@
--- ðŸ’€ WITNESS FINAL FLING: Respawn, Mobile/PC, Q key, Infinite Jump, Clean re-execute with old fling
+-- 💀 WITNESS FINAL FLING: Respawn, Mobile/PC, Q key, Infinite Jump, Clean re-execute with old fling
 
--- ðŸ” Destroy old GUIs and reset state
+-- 🔁 Destroy old GUIs and reset state
 pcall(function() game.CoreGui:FindFirstChild("HackerFlingGUI"):Destroy() end)
 pcall(function() _G.FlingPlatformButton:Disconnect() end)
 pcall(function() _G.InfiniteJumpConnection:Disconnect() end)
@@ -10,13 +10,13 @@ local UIS = game:GetService("UserInputService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
--- ðŸ“¦ GUI Setup
+-- 📦 GUI Setup
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "HackerFlingGUI"
 ScreenGui.Parent = game.CoreGui
 ScreenGui.ResetOnSpawn = false
 
--- ðŸŒ€ Fling function (Old fling style: spins + velocity fling)
+-- 🌀 Fling function (Old fling style: spins + velocity fling)
 local function flingNow()
 	local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 	local hrp = char:FindFirstChild("HumanoidRootPart")
@@ -47,7 +47,7 @@ local function flingNow()
 	hum.PlatformStand = false
 end
 
--- ðŸ“± Mobile Button
+-- 📱 Mobile Button
 local function setupMobileButton()
 	local btn = Instance.new("TextButton")
 	btn.Name = "FlingButton"
@@ -66,7 +66,7 @@ local function setupMobileButton()
 	btn.MouseButton1Click:Connect(flingNow)
 end
 
--- ðŸ–¥ï¸ Platform Selection
+-- 🖥️ Platform Selection
 local function showPlatformChoice()
 	local frame = Instance.new("Frame", ScreenGui)
 	frame.Size = UDim2.new(0, 220, 0, 120)
@@ -116,14 +116,14 @@ local function showPlatformChoice()
 	end)
 end
 
--- âŒ¨ï¸ PC fling keybind
+-- ⌨️ PC fling keybind
 _G.FlingPlatformButton = UIS.InputBegan:Connect(function(input, gpe)
 	if not gpe and _G.FlingPlatform == "PC" and input.KeyCode == Enum.KeyCode.Q then
 		flingNow()
 	end
 end)
 
--- ðŸ¦˜ Infinite jump
+-- 🦘 Infinite jump
 _G.InfiniteJumpConnection = UIS.JumpRequest:Connect(function()
 	local char = LocalPlayer.Character
 	local hum = char and char:FindFirstChildOfClass("Humanoid")
@@ -132,7 +132,7 @@ _G.InfiniteJumpConnection = UIS.JumpRequest:Connect(function()
 	end
 end)
 
--- ðŸ” Respawn support
+-- 🔁 Respawn support
 Players.LocalPlayer.CharacterAdded:Connect(function()
 	task.wait(1)
 	if _G.FlingPlatform == "Mobile" then
@@ -140,7 +140,7 @@ Players.LocalPlayer.CharacterAdded:Connect(function()
 	end
 end)
 
--- ðŸ”ƒ Initial setup
+-- 🔃 Initial setup
 if _G.FlingPlatform == nil then
 	showPlatformChoice()
 elseif _G.FlingPlatform == "Mobile" then
