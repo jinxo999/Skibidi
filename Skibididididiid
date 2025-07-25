@@ -1,0 +1,148 @@
+-- ðŸ’€ WITNESS FINAL FLING: Respawn, Mobile/PC, Q key, Infinite Jump, Clean re-execute with old fling
+
+-- ðŸ” Destroy old GUIs and reset state
+pcall(function() game.CoreGui:FindFirstChild("HackerFlingGUI"):Destroy() end)
+pcall(function() _G.FlingPlatformButton:Disconnect() end)
+pcall(function() _G.InfiniteJumpConnection:Disconnect() end)
+_G.FlingPlatform = nil
+
+local UIS = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- ðŸ“¦ GUI Setup
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "HackerFlingGUI"
+ScreenGui.Parent = game.CoreGui
+ScreenGui.ResetOnSpawn = false
+
+-- ðŸŒ€ Fling function (Old fling style: spins + velocity fling)
+local function flingNow()
+	local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+	local hrp = char:FindFirstChild("HumanoidRootPart")
+	local hum = char:FindFirstChildOfClass("Humanoid")
+
+	if not (hrp and hum) then return end
+
+	hum.PlatformStand = true
+
+	local spin = Instance.new("BodyAngularVelocity", hrp)
+	spin.AngularVelocity = Vector3.new(5, 40, 5)
+	spin.MaxTorque = Vector3.new(1e5, 1e5, 1e5)
+	spin.P = 3000
+
+	local bv = Instance.new("BodyVelocity", hrp)
+	bv.Velocity = Vector3.new(
+		math.random(-50, 50),
+		math.random(150, 180),
+		math.random(-50, 50)
+	)
+	bv.MaxForce = Vector3.new(1e6, 1e6, 1e6)
+	bv.P = 3000
+
+	task.wait(1.2)
+
+	bv:Destroy()
+	spin:Destroy()
+	hum.PlatformStand = false
+end
+
+-- ðŸ“± Mobile Button
+local function setupMobileButton()
+	local btn = Instance.new("TextButton")
+	btn.Name = "FlingButton"
+	btn.Size = UDim2.new(0, 140, 0, 45)
+	btn.Position = UDim2.new(0, 10, 0, 10) -- moved up slightly
+	btn.Text = "ðŸ’€ FLING"
+	btn.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+	btn.TextColor3 = Color3.fromRGB(0, 255, 0)
+	btn.Font = Enum.Font.Code
+	btn.TextSize = 18
+	btn.BorderSizePixel = 0
+	btn.AutoButtonColor = false
+	Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
+	btn.Parent = ScreenGui
+
+	btn.MouseButton1Click:Connect(flingNow)
+end
+
+-- ðŸ–¥ï¸ Platform Selection
+local function showPlatformChoice()
+	local frame = Instance.new("Frame", ScreenGui)
+	frame.Size = UDim2.new(0, 220, 0, 120)
+	frame.Position = UDim2.new(0.5, -110, 0.5, -60)
+	frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+	frame.BorderSizePixel = 0
+	Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 12)
+
+	local label = Instance.new("TextLabel", frame)
+	label.Size = UDim2.new(1, 0, 0.4, 0)
+	label.Position = UDim2.new(0, 0, 0, 0)
+	label.Text = "Select your platform:"
+	label.BackgroundTransparency = 1
+	label.TextColor3 = Color3.fromRGB(255, 255, 255)
+	label.Font = Enum.Font.Code
+	label.TextSize = 20
+
+	local pcBtn = Instance.new("TextButton", frame)
+	pcBtn.Size = UDim2.new(0.4, 0, 0.35, 0)
+	pcBtn.Position = UDim2.new(0.1, 0, 0.5, 0)
+	pcBtn.Text = "PC"
+	pcBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+	pcBtn.TextColor3 = Color3.fromRGB(0, 200, 255)
+	pcBtn.Font = Enum.Font.Code
+	pcBtn.TextSize = 18
+	Instance.new("UICorner", pcBtn).CornerRadius = UDim.new(0, 8)
+
+	local mobileBtn = Instance.new("TextButton", frame)
+	mobileBtn.Size = UDim2.new(0.4, 0, 0.35, 0)
+	mobileBtn.Position = UDim2.new(0.5, 10, 0.5, 0)
+	mobileBtn.Text = "Mobile"
+	mobileBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+	mobileBtn.TextColor3 = Color3.fromRGB(0, 255, 100)
+	mobileBtn.Font = Enum.Font.Code
+	mobileBtn.TextSize = 18
+	Instance.new("UICorner", mobileBtn).CornerRadius = UDim.new(0, 8)
+
+	pcBtn.MouseButton1Click:Connect(function()
+		_G.FlingPlatform = "PC"
+		frame:Destroy()
+	end)
+
+	mobileBtn.MouseButton1Click:Connect(function()
+		_G.FlingPlatform = "Mobile"
+		frame:Destroy()
+		setupMobileButton()
+	end)
+end
+
+-- âŒ¨ï¸ PC fling keybind
+_G.FlingPlatformButton = UIS.InputBegan:Connect(function(input, gpe)
+	if not gpe and _G.FlingPlatform == "PC" and input.KeyCode == Enum.KeyCode.Q then
+		flingNow()
+	end
+end)
+
+-- ðŸ¦˜ Infinite jump
+_G.InfiniteJumpConnection = UIS.JumpRequest:Connect(function()
+	local char = LocalPlayer.Character
+	local hum = char and char:FindFirstChildOfClass("Humanoid")
+	if hum then
+		hum:ChangeState(Enum.HumanoidStateType.Jumping)
+	end
+end)
+
+-- ðŸ” Respawn support
+Players.LocalPlayer.CharacterAdded:Connect(function()
+	task.wait(1)
+	if _G.FlingPlatform == "Mobile" then
+		setupMobileButton()
+	end
+end)
+
+-- ðŸ”ƒ Initial setup
+if _G.FlingPlatform == nil then
+	showPlatformChoice()
+elseif _G.FlingPlatform == "Mobile" then
+	setupMobileButton()
+end
